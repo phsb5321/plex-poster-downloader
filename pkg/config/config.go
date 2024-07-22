@@ -1,7 +1,9 @@
-// File: config/config.go
 package config
 
 import (
+	"path/filepath"
+	"runtime"
+
 	"github.com/sirupsen/logrus"
 	"github.com/spf13/viper"
 )
@@ -9,7 +11,15 @@ import (
 func Init() {
 	viper.SetConfigName("config")
 	viper.SetConfigType("yml")
-	viper.AddConfigPath("./../config")
+
+	// Get the directory of the current file
+	_, filename, _, ok := runtime.Caller(0)
+	if !ok {
+		logrus.Fatal("No caller information")
+	}
+	configDir := filepath.Join(filepath.Dir(filename), "..", "..", "config")
+
+	viper.AddConfigPath(configDir)
 
 	err := viper.ReadInConfig()
 	if err != nil {
@@ -17,6 +27,6 @@ func Init() {
 	}
 }
 
-func GetBaseUrl() string {
-	return viper.GetString("baseUrl")
+func GetUnsplashAccessKey() string {
+	return viper.GetString("unsplash.accessKey")
 }

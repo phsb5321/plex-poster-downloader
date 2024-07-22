@@ -2,6 +2,7 @@ package directory
 
 import (
 	"os/user"
+	"regexp"
 	"strings"
 
 	"github.com/spf13/afero"
@@ -33,10 +34,11 @@ func CountSeasonDirectories(dir string) (int, error) {
 		return 0, err
 	}
 
+	seasonRegex := regexp.MustCompile(`^S(\d+)`)
 	count := 0
 	for _, file := range files {
 		fileName := file.Name()
-		if file.IsDir() && strings.HasPrefix(fileName, "Season") {
+		if file.IsDir() && seasonRegex.MatchString(fileName) {
 			count++
 		}
 	}

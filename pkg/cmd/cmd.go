@@ -13,6 +13,7 @@ import (
 	"plex-poster-downloader/pkg/config"
 	"plex-poster-downloader/pkg/directory"
 	"plex-poster-downloader/pkg/poster"
+	"plex-poster-downloader/pkg/unsplash"
 )
 
 var rootCmd = &cobra.Command{
@@ -39,7 +40,13 @@ func execute(cmd *cobra.Command, args []string) {
 		logrus.Fatalf("Error counting season directories: %v", err)
 	}
 
-	baseUrl := config.GetBaseUrl()
+	if numSeasons == 0 {
+		logrus.Warn("No season directories found. Generating only the main poster.")
+		numSeasons = 1 // Set to 1 to generate at least the main poster
+	}
+
+	unsplashAccessKey := config.GetUnsplashAccessKey()
+	unsplashClient := unsplash.NewClient(unsplashAccessKey)
 
 	p := mpb.New(mpb.WithWidth(60))
 	bar := p.AddBar(int64(numSeasons),
@@ -57,7 +64,7 @@ func execute(cmd *cobra.Command, args []string) {
 		logrus.Fatalf("Error expanding home directory: %v", err)
 	}
 
-	err = poster.GenerateSeasonPosters(dir, numSeasons, baseUrl, func() { bar.Increment() })
+	err = poster.GenerateSeasonPosters(dir, numSeasons, unsplashClient, func() { bar.Increment() })
 	if err != nil {
 		logrus.Fatalf("Error generating season posters: %v", err)
 	}
