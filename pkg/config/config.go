@@ -1,3 +1,4 @@
+// File: config/config.go
 package config
 
 import (
@@ -27,6 +28,6 @@ func Init() {
 	}
 }
 
-func GetUnsplashAccessKey() string {
-	return viper.GetString("unsplash.accessKey")
+func GetImageProviderAccessKey() string {
+	return viper.GetString("imageprovider.accessKey")
 }

@@ -1,37 +1,36 @@
+// File: poster/poster_test.go
 package poster_test
 
 import (
-	"plex-poster-downloader/pkg/unsplash"
+	"plex-poster-downloader/pkg/imageprovider"
 )
 
-// MockUnsplashClient is a mock implementation of the Unsplash client
-type MockUnsplashClient struct {
-	GetRandomPhotoFunc func() (*unsplash.Photo, error)
-	TrackDownloadFunc  func(*unsplash.Photo) error
+// MockImageProviderClient is a mock implementation of the ImageProvider client
+type MockImageProviderClient struct {
+	GetRandomPhotoFunc func() (*imageprovider.Photo, error)
+	TrackDownloadFunc  func(*imageprovider.Photo) error
 }
 
-func (m *MockUnsplashClient) GetRandomPhoto() (*unsplash.Photo, error) {
+func (m *MockImageProviderClient) GetRandomPhoto() (*imageprovider.Photo, error) {
 	return m.GetRandomPhotoFunc()
 }
 
-func (m *MockUnsplashClient) TrackDownload(photo *unsplash.Photo) error {
+func (m *MockImageProviderClient) TrackDownload(photo *imageprovider.Photo) error {
 	return m.TrackDownloadFunc(photo)
 }
 
-// NewMockUnsplashClient creates a new mock Unsplash client
-func NewMockUnsplashClient() *MockUnsplashClient {
-	return &MockUnsplashClient{
-		GetRandomPhotoFunc: func() (*unsplash.Photo, error) {
-			return &unsplash.Photo{
-				URLs: unsplash.URLs{
-					Regular: "http://example.com/image.png",
+// NewMockImageProviderClient creates a new mock ImageProvider client
+func NewMockImageProviderClient() *MockImageProviderClient {
+	return &MockImageProviderClient{
+		GetRandomPhotoFunc: func() (*imageprovider.Photo, error) {
+			return &imageprovider.Photo{
+				Src: imageprovider.Src{
+					Large: "http://example.com/image.png",
 				},
-				Links: unsplash.Links{
-					DownloadLocation: "http://example.com/download",
-				},
+				URL: "http://example.com/download",
 			}, nil
 		},
-		TrackDownloadFunc: func(*unsplash.Photo) error {
+		TrackDownloadFunc: func(*imageprovider.Photo) error {
 			return nil
 		},
 	}
