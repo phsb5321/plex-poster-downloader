@@ -8,7 +8,6 @@ import (
 	"github.com/vbauerster/mpb/v7"
 	"github.com/vbauerster/mpb/v7/decor"
 
-	"plex-poster-downloader/pkg/config"
 	"plex-poster-downloader/pkg/directory"
 	"plex-poster-downloader/pkg/poster"
 	"plex-poster-downloader/pkg/unsplash"
@@ -26,8 +25,6 @@ func Execute() error {
 }
 
 func execute(_ *cobra.Command, args []string) error {
-	config.Init()
-
 	dir, err := directory.ExpandHomeDir(args[0])
 	if err != nil {
 		return fmt.Errorf("expanding home directory: %w", err)
@@ -43,7 +40,7 @@ func execute(_ *cobra.Command, args []string) error {
 		numSeasons = 1
 	}
 
-	unsplashClient := unsplash.NewClient(config.GetUnsplashAccessKey())
+	unsplashClient := unsplash.NewClient("XZhnreNlU3FDxEh31XTTPL1xSXHz8RxNUfqWnmJpaqA")
 
 	p := mpb.New(mpb.WithWidth(60))
 	bar := p.AddBar(int64(numSeasons),
