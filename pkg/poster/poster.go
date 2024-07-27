@@ -2,6 +2,7 @@ package poster
 
 import (
 	"fmt"
+	"os"
 	"sync"
 	"time"
 
@@ -20,19 +21,25 @@ func GenerateSeasonPosters(dir string, numSeasons int, unsplashClient *unsplash.
 		go func(season int) {
 			defer wg.Done()
 
-			<-rateLimiter.C // Wait for rate limiter
-
-			photo, err := unsplashClient.GetRandomPhoto()
-			if err != nil {
-				errors <- fmt.Errorf("error getting random photo for season %d: %w", season, err)
-				return
-			}
+			<-rateLimiter.C
 
 			var posterFilename string
 			if season == 0 {
 				posterFilename = fmt.Sprintf("%s/poster.png", dir)
 			} else {
 				posterFilename = fmt.Sprintf("%s/season%02d-poster.png", dir, season)
+			}
+
+			// Check if the poster already exists
+			if _, err := os.Stat(posterFilename); err == nil {
+				progressCb() // Call progress callback for skipped posters
+				return
+			}
+
+			photo, err := unsplashClient.GetRandomPhoto()
+			if err != nil {
+				errors <- fmt.Errorf("error getting random photo for season %d: %w", season, err)
+				return
 			}
 
 			if err := downloader.DownloadImage(photo.URLs.Regular, posterFilename); err != nil {
